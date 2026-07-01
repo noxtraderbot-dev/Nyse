@@ -1,0 +1,89 @@
+‎ ‎ I want you to build a website with the full experience of a real trading app.
+it should have a deposit button where the deposit user clicks deposit he should be required to provide a transaction code
+
+Now I want you to add a deposit system when someone wants to deposit a deposit portal should be created he should state the amount he wants to deposit and be required to provide a transaction code these code the codes are (don’t say it’s from telegram)
+TXN-AX7K-9F2D-QW81-7C4E
+TXN-BR4M-3J8X-VP26-1LA9
+TXN-CK9Z-7N1F-XE84-2RW5
+TXN-DQ2H-8B6P-TM91-4YC7
+TXN-EV8L-5R3K-ZA72-9GX1
+TXN-FM1Q-4C9W-LD85-6NB2
+TXN-GX7D-2V8E-RT34-1PK9
+TXN-HZ5A-6Y2N-CF80-3QM4
+TXN-JN3T-8L7B-WX61-5RD2
+TXN-KP4F-1M9Z-VE73-8HA6
+TXN-LC8R-5Q2D-YN14-7BT3
+TXN-MW2X-7E6A-KR95-0CF8
+TXN-NF9P-3T1L-DX62-4GV7
+TXN-PR6B-8W5Q-AM30-9JK2
+TXN-QD1Y-4K8F-ZN57-6EX9
+TXN-RV7C-2P9H-LA84-1WM5
+TXN-SX5N-6D3R-QF20-8TB1
+TXN-TA9E-1V7K-CM65-4PY8
+TXN-UK4W-8B2X-JR91-5DN3
+TXN-VE6M-3F9A-XQ47-2LC8
+Once any of these codes are provided immediately fund their account with the money he wanted to deposit this codes should be reusable (don’t say anything about it in the site ) but also make it that these codes can only be reused in 44 hours (but dont state it in the site) if anyone tries to use the code twice it should say code already use until 44hours but don't say anything about the 44 hours in the site
+
+and when they deposit successfully the should  start the 7 day ai investment that will make them x2 of the money they initially deposited but it should not be directly x2 it can be a lower or higher but just make sure there is profit .
+
+ Now add a live tracker where they can see how their investing is going and how ai is working it for them they should also be able to see their deposit history .
+
+Now add a register option when the bot starts so that users can login if the mistakenly lose their account it should only be username and password and also add some visible losses to the trades to make it look real but at the end of the 7days they must get their full investment reward .
+
+ I want you to add withdraw option when users click they should be shown please confirm your Identity before you can withdraw your funds the give options proceed or decline then say contact the administration or. contact @AverAssistancebot to 
+ provide proof of your authenticity in this case any writing that is sent should be regarded as invalid only a picture should be allowed anything other than a picture should be declined .
+
+once the user is done say “how much would you like to withdraw” then the user gives the amount he wishes to withdraw then you'll give him different crypto currency to choose from and it should be in line with the real rate of the coin at that time make sure that the amount the users wants to withdraw is lower than his balance if not say insufficient balance ,and then when he clicks withdraw he should be given the option to add his wallet address after that show him a real looking transaction receipt telling him that he will receive his transaction in the next 48hours show transaction status pending then after 22 hours show the transaction status sent (don't say anything about the 22hours) then the balance he withdrew should be deducted his wallet balance then after 5hours the balance he withdrew should be added back to their dashboard (their balance should be visible in on their dashboard) provide the receipt and the transaction status should show reversed 
+then he should be given to options Continue or See possible causes then give him some possible causes why the the money was reversed include the fact that the user used a cold wallet instead of a hot wallet ‎ make sure the receipt is available until the full process is over and make sure you remove the money he withdrew then add it back after the 5hrs
+
+Users should be able to see their balance on their dashboard ‎Add a Portfolio and make it look real. give user a menu where they can see Trending assets (top gainers and losers) also add also add trade alert where the bot will provide upcoming events affecting markets 
+
+also a add Settings where users can change their username, account status, on or off trade alert, change password ( before they can change password they must put their old password if the password doesn't tally say failed to change password) the ai should make multiple trades within minutes and not one ‎ ‎Users should be give an option to refresh their live tracker and see all the trades ai is making there should be some notable losses in the trades but it must the target after 7 days the ai must trade 
+multiple stocks within every minute
+
+ add customer care in the bot and give some common issues and when the user clicks the issue it should be solve in 30 minutes (don’t state this on the bot) and add “if you still face the same issue contact @AverAssistancebot”
+
+Users should be given an option in setting to log out and another option to report a problem when they click report a problem “report your problem
+here @AverAssistancebot" 
+
+and the trade alert should be changed and updated every 24hours but don't state this in the bot
+ 
+Add our telegram bot https://t.me/AverNoxTraderbot 
+
+Add the QR codes to deposit methods ones the first one is bitcoin and the second one is etherum and the third one is solana 
+
+user should be able to receive notifications about different things like goal hit , trade alerts , major market impact and more (these notifications should not just be random they should be things actually going on in the account)
+
+and also in the register field add email and the password must not be less than eight words and must have a special character also add confirm password
+then in the login area add forgot password and then if it's clicked the user should be required to write his email once done press next then it should say a 6 digit code has been sent to your email then the user should insert the 6 digit code it could be anything as long as it has double numbers in the 6 digit if it doesn't say invalid then if log the user back in with the email he used for registration
+
+
+
+Add professional Aver Express branding throughout the website without changing the existing design, layout, colors, functionality, or user experience.
+Allocate the branding as follows:
+1. Footer (bottom of every page)
+    * Add:
+        * © 2026 Aver . All rights reserved.
+        * Built, designed, and maintained by NYSE.
+    * Place this in small, subtle text below the existing footer content.
+2. About Section
+    * Add a new paragraph explaining that AverNox TraderBot is a proprietary platform developed by New York Stock Exchange (NYSE) and that the company designs and maintains the platform.
+3. Legal / Terms / Privacy (or create a Legal section if one doesn't exist)
+    * Include a copyright notice stating that the website's content, interface, graphics, software, and source code are the intellectual property of NYSE.
+    * Add a trademark statement explaining that AverNox™, and AverNox TraderBot™ are trademarks of NYSE.
+4. Loading Screen or Splash Screen (if present)
+    * Add a small line beneath the logo:
+        * "An AverCore Technology."
+5. Settings or About Panel
+    * Display:
+        * Developed by New York Stock Exchange (NYSE)
+        * Version 1.0
+        * © 2026 Aver Express
+6. Source Code
+    * Add header comments identifying NYSE as the developer where appropriate.
+    * Use comments such as:
+        * Developed by NYSE.
+        * Copyright © 2026 NYSE.
+Ensure all branding is subtle and professional, matching the existing visual style. Do not alter the site's structure, navigation, functionality, animations, colors, or layout—only integrate the ownership and branding notices naturally into appropriate locations.
+
+

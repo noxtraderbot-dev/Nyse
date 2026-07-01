@@ -1,22 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AverNox TraderBot API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
-    description: Health operations
+  - name: auth
+  - name: deposits
+  - name: investments
+  - name: trades
+  - name: withdrawals
+  - name: portfolio
+  - name: notifications
+  - name: market
+  - name: settings
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +30,418 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/register:
+    post:
+      operationId: register
+      tags: [auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Logout
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/forgot-password:
+    post:
+      operationId: forgotPassword
+      tags: [auth]
+      summary: Request password reset OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ForgotPasswordInput"
+      responses:
+        "200":
+          description: OTP sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /auth/verify-otp:
+    post:
+      operationId: verifyOtp
+      tags: [auth]
+      summary: Verify OTP and reset password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VerifyOtpInput"
+      responses:
+        "200":
+          description: OTP verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResult"
+        "400":
+          description: Invalid OTP
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /deposits:
+    get:
+      operationId: getDeposits
+      tags: [deposits]
+      summary: Get deposit history
+      responses:
+        "200":
+          description: List of deposits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Deposit"
+    post:
+      operationId: createDeposit
+      tags: [deposits]
+      summary: Create a deposit
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DepositInput"
+      responses:
+        "200":
+          description: Deposit successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Deposit"
+        "400":
+          description: Invalid transaction code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /investments/active:
+    get:
+      operationId: getActiveInvestment
+      tags: [investments]
+      summary: Get active investment
+      responses:
+        "200":
+          description: Active investment or null
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Investment"
+
+  /investments/trades:
+    get:
+      operationId: getInvestmentTrades
+      tags: [investments]
+      summary: Get all AI trades for active investment
+      responses:
+        "200":
+          description: List of trades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+
+  /investments/refresh:
+    post:
+      operationId: refreshTrades
+      tags: [investments]
+      summary: Refresh and generate new AI trades
+      responses:
+        "200":
+          description: Updated trades
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Trade"
+
+  /withdrawals:
+    get:
+      operationId: getWithdrawals
+      tags: [withdrawals]
+      summary: Get withdrawal history
+      responses:
+        "200":
+          description: List of withdrawals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Withdrawal"
+    post:
+      operationId: createWithdrawal
+      tags: [withdrawals]
+      summary: Initiate a withdrawal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WithdrawalInput"
+      responses:
+        "200":
+          description: Withdrawal initiated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Withdrawal"
+        "400":
+          description: Insufficient balance or error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /portfolio/summary:
+    get:
+      operationId: getPortfolioSummary
+      tags: [portfolio]
+      summary: Get portfolio summary
+      responses:
+        "200":
+          description: Portfolio summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PortfolioSummary"
+
+  /portfolio/holdings:
+    get:
+      operationId: getPortfolioHoldings
+      tags: [portfolio]
+      summary: Get portfolio asset holdings
+      responses:
+        "200":
+          description: Portfolio holdings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Holding"
+
+  /market/trending:
+    get:
+      operationId: getTrendingAssets
+      tags: [market]
+      summary: Get trending assets (top gainers and losers)
+      responses:
+        "200":
+          description: Trending assets
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TrendingAssets"
+
+  /market/crypto-rates:
+    get:
+      operationId: getCryptoRates
+      tags: [market]
+      summary: Get current crypto rates for withdrawal
+      responses:
+        "200":
+          description: Crypto rates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CryptoRate"
+
+  /market/trade-alerts:
+    get:
+      operationId: getTradeAlerts
+      tags: [market]
+      summary: Get current trade alerts and upcoming events
+      responses:
+        "200":
+          description: Trade alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TradeAlert"
+
+  /notifications:
+    get:
+      operationId: getNotifications
+      tags: [notifications]
+      summary: Get user notifications
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /notifications/{id}/read:
+    patch:
+      operationId: markNotificationRead
+      tags: [notifications]
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Marked as read
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  /settings:
+    get:
+      operationId: getSettings
+      tags: [settings]
+      summary: Get user settings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+    patch:
+      operationId: updateSettings
+      tags: [settings]
+      summary: Update user settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SettingsUpdate"
+      responses:
+        "200":
+          description: Updated settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserSettings"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /settings/change-password:
+    post:
+      operationId: changePassword
+      tags: [settings]
+      summary: Change password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePasswordInput"
+      responses:
+        "200":
+          description: Password changed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Old password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +449,345 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        email:
+          type: string
+        balance:
+          type: number
+        accountStatus:
+          type: string
+        tradeAlertsEnabled:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, username, email, balance, accountStatus, tradeAlertsEnabled, createdAt]
+
+    AuthResult:
+      type: object
+      properties:
+        user:
+          $ref: "#/components/schemas/User"
+        token:
+          type: string
+      required: [user, token]
+
+    RegisterInput:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        confirmPassword:
+          type: string
+      required: [username, email, password, confirmPassword]
+
+    LoginInput:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required: [email, password]
+
+    ForgotPasswordInput:
+      type: object
+      properties:
+        email:
+          type: string
+      required: [email]
+
+    VerifyOtpInput:
+      type: object
+      properties:
+        email:
+          type: string
+        otp:
+          type: string
+      required: [email, otp]
+
+    Deposit:
+      type: object
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        txnCode:
+          type: string
+        status:
+          type: string
+        currency:
+          type: string
+        createdAt:
+          type: string
+      required: [id, amount, txnCode, status, currency, createdAt]
+
+    DepositInput:
+      type: object
+      properties:
+        amount:
+          type: number
+        txnCode:
+          type: string
+        currency:
+          type: string
+      required: [amount, txnCode, currency]
+
+    Investment:
+      type: object
+      properties:
+        id:
+          type: integer
+        principal:
+          type: number
+        targetReturn:
+          type: number
+        currentValue:
+          type: number
+        profitLoss:
+          type: number
+        profitLossPercent:
+          type: number
+        startDate:
+          type: string
+        endDate:
+          type: string
+        daysRemaining:
+          type: integer
+        status:
+          type: string
+        progressPercent:
+          type: number
+      required: [id, principal, targetReturn, currentValue, profitLoss, profitLossPercent, startDate, endDate, daysRemaining, status, progressPercent]
+
+    Trade:
+      type: object
+      properties:
+        id:
+          type: integer
+        symbol:
+          type: string
+        type:
+          type: string
+        amount:
+          type: number
+        price:
+          type: number
+        profitLoss:
+          type: number
+        profitLossPercent:
+          type: number
+        status:
+          type: string
+        executedAt:
+          type: string
+      required: [id, symbol, type, amount, price, profitLoss, profitLossPercent, status, executedAt]
+
+    Withdrawal:
+      type: object
+      properties:
+        id:
+          type: integer
+        amount:
+          type: number
+        currency:
+          type: string
+        walletAddress:
+          type: string
+        cryptoAmount:
+          type: number
+        status:
+          type: string
+        failureReason:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        completedAt:
+          type: ["string", "null"]
+      required: [id, amount, currency, walletAddress, cryptoAmount, status, createdAt]
+
+    WithdrawalInput:
+      type: object
+      properties:
+        amount:
+          type: number
+        currency:
+          type: string
+        walletAddress:
+          type: string
+      required: [amount, currency, walletAddress]
+
+    PortfolioSummary:
+      type: object
+      properties:
+        totalBalance:
+          type: number
+        totalDeposited:
+          type: number
+        totalProfit:
+          type: number
+        totalProfitPercent:
+          type: number
+        activeInvestmentValue:
+          type: number
+        totalWithdrawn:
+          type: number
+        winRate:
+          type: number
+        totalTrades:
+          type: integer
+      required: [totalBalance, totalDeposited, totalProfit, totalProfitPercent, activeInvestmentValue, totalWithdrawn, winRate, totalTrades]
+
+    Holding:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        amount:
+          type: number
+        value:
+          type: number
+        change24h:
+          type: number
+        allocation:
+          type: number
+      required: [symbol, name, amount, value, change24h, allocation]
+
+    TrendingAssets:
+      type: object
+      properties:
+        gainers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssetQuote"
+        losers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AssetQuote"
+      required: [gainers, losers]
+
+    AssetQuote:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        change24h:
+          type: number
+        changePercent24h:
+          type: number
+        volume:
+          type: string
+        marketCap:
+          type: string
+      required: [symbol, name, price, change24h, changePercent24h, volume, marketCap]
+
+    CryptoRate:
+      type: object
+      properties:
+        symbol:
+          type: string
+        name:
+          type: string
+        usdRate:
+          type: number
+        icon:
+          type: string
+      required: [symbol, name, usdRate, icon]
+
+    TradeAlert:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        impact:
+          type: string
+        time:
+          type: string
+        asset:
+          type: string
+      required: [id, title, description, impact, time, asset]
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        message:
+          type: string
+        type:
+          type: string
+        read:
+          type: boolean
+        createdAt:
+          type: string
+      required: [id, title, message, type, read, createdAt]
+
+    UserSettings:
+      type: object
+      properties:
+        username:
+          type: string
+        email:
+          type: string
+        accountStatus:
+          type: string
+        tradeAlertsEnabled:
+          type: boolean
+      required: [username, email, accountStatus, tradeAlertsEnabled]
+
+    SettingsUpdate:
+      type: object
+      properties:
+        username:
+          type: string
+        accountStatus:
+          type: string
+        tradeAlertsEnabled:
+          type: boolean
+
+    ChangePasswordInput:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+      required: [oldPassword, newPassword]
