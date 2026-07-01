@@ -12,6 +12,8 @@ export const usersTable = pgTable("users", {
   tradeAlertsEnabled: boolean("trade_alerts_enabled").notNull().default(true),
   resetOtp: varchar("reset_otp", { length: 10 }),
   resetOtpEmail: varchar("reset_otp_email", { length: 255 }),
+  referralCode: varchar("referral_code", { length: 16 }).unique(),
+  referredBy: integer("referred_by"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

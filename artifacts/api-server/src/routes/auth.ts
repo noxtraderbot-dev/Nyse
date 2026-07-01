@@ -16,7 +16,6 @@ function generateToken(userId: number): string {
 }
 
 function generateOtp(): string {
-  // Must contain a double digit pair (11, 22, 33, etc.)
   const pairs = ["11", "22", "33", "44", "55", "66", "77", "88", "99", "00"];
   const pair = pairs[Math.floor(Math.random() * pairs.length)];
   const remaining = Array.from({ length: 4 }, () => Math.floor(Math.random() * 10)).join("");
@@ -24,15 +23,20 @@ function generateOtp(): string {
   return (remaining.slice(0, insertAt) + pair + remaining.slice(insertAt)).slice(0, 6);
 }
 
-// In-memory token store (for simplicity)
-const tokenStore = new Map<string, number>(); // token -> userId
+function generateReferralCode(username: string): string {
+  const prefix = username.toUpperCase().slice(0, 4).replace(/[^A-Z0-9]/g, "X").padEnd(4, "X");
+  const suffix = crypto.randomBytes(3).toString("hex").toUpperCase();
+  return `AVX-${prefix}${suffix}`;
+}
 
+// In-memory token store
+const tokenStore = new Map<string, number>(); // token -> userId
 export { tokenStore };
 
 // Register
 router.post("/auth/register", async (req, res) => {
   try {
-    const { username, email, password, confirmPassword } = req.body;
+    const { username, email, password, confirmPassword, referralCode } = req.body;
     if (!username || !email || !password || !confirmPassword) {
       return res.status(400).json({ error: "All fields are required" });
     }
@@ -56,10 +60,35 @@ router.post("/auth/register", async (req, res) => {
       return res.status(400).json({ error: "Username already taken" });
     }
 
+    // Handle referral
+    let referrerId: number | undefined;
+    if (referralCode && referralCode.trim()) {
+      const referrer = await db.select().from(usersTable)
+        .where(eq(usersTable.referralCode, referralCode.trim().toUpperCase()))
+        .limit(1);
+      if (referrer.length > 0) {
+        referrerId = referrer[0].id;
+        // Credit $15 to referrer
+        const newBalance = parseFloat(referrer[0].balance as string) + 15;
+        await db.update(usersTable).set({ balance: newBalance.toString() }).where(eq(usersTable.id, referrer[0].id));
+        // Notify referrer
+        await db.insert(notificationsTable).values({
+          userId: referrer[0].id,
+          title: "Referral Bonus Received!",
+          message: `${username} signed up using your referral code. $15.00 has been added to your account.`,
+          type: "goal_hit",
+        });
+      }
+    }
+
+    const newReferralCode = generateReferralCode(username);
+
     const [user] = await db.insert(usersTable).values({
       username,
       email,
       passwordHash: hashPassword(password),
+      referralCode: newReferralCode,
+      referredBy: referrerId,
     }).returning();
 
     await db.insert(notificationsTable).values({
@@ -128,8 +157,7 @@ router.post("/auth/login", async (req, res) => {
 router.post("/auth/logout", async (req, res) => {
   const auth = req.headers.authorization;
   if (auth?.startsWith("Bearer ")) {
-    const token = auth.slice(7);
-    tokenStore.delete(token);
+    tokenStore.delete(auth.slice(7));
   }
   return res.json({ message: "Logged out successfully" });
 });
@@ -138,19 +166,13 @@ router.post("/auth/logout", async (req, res) => {
 router.get("/auth/me", async (req, res) => {
   try {
     const auth = req.headers.authorization;
-    if (!auth?.startsWith("Bearer ")) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!auth?.startsWith("Bearer ")) return res.status(401).json({ error: "Unauthorized" });
     const token = auth.slice(7);
     const userId = tokenStore.get(token);
-    if (!userId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
 
     const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    if (!user) return res.status(401).json({ error: "Unauthorized" });
 
     return res.json({
       id: user.id,
@@ -171,20 +193,16 @@ router.get("/auth/me", async (req, res) => {
 router.post("/auth/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
-    if (!email) {
-      return res.status(400).json({ error: "Email is required" });
-    }
+    if (!email) return res.status(400).json({ error: "Email is required" });
 
     const [user] = await db.select().from(usersTable).where(eq(usersTable.email, email)).limit(1);
     if (!user) {
-      // Don't reveal whether email exists
       return res.json({ message: "If this email is registered, a code has been sent" });
     }
 
     const otp = generateOtp();
     await db.update(usersTable).set({ resetOtp: otp, resetOtpEmail: email }).where(eq(usersTable.id, user.id));
 
-    // In a real app, send email. Here we just store it.
     return res.json({ message: "A 6-digit code has been sent to your email" });
   } catch (err) {
     req.log.error({ err }, "Forgot password error");
@@ -196,9 +214,7 @@ router.post("/auth/forgot-password", async (req, res) => {
 router.post("/auth/verify-otp", async (req, res) => {
   try {
     const { email, otp } = req.body;
-    if (!email || !otp) {
-      return res.status(400).json({ error: "Email and OTP are required" });
-    }
+    if (!email || !otp) return res.status(400).json({ error: "Email and OTP are required" });
 
     // Validate OTP has a double digit
     const hasDouble = /(.)\1/.test(otp);
@@ -211,7 +227,6 @@ router.post("/auth/verify-otp", async (req, res) => {
       return res.status(400).json({ error: "Invalid code" });
     }
 
-    // Clear OTP
     await db.update(usersTable).set({ resetOtp: null, resetOtpEmail: null }).where(eq(usersTable.id, user.id));
 
     const token = generateToken(user.id);

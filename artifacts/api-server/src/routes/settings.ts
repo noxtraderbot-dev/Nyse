@@ -47,7 +47,6 @@ router.patch("/settings", async (req, res) => {
     const updates: any = {};
 
     if (username !== undefined) {
-      // Check if username is taken by someone else
       const existing = await db.select().from(usersTable).where(eq(usersTable.username, username)).limit(1);
       if (existing.length > 0 && existing[0].id !== userId) {
         return res.status(400).json({ error: "Username already taken" });
@@ -95,10 +94,28 @@ router.post("/settings/change-password", async (req, res) => {
     }
 
     await db.update(usersTable).set({ passwordHash: hashPassword(newPassword) }).where(eq(usersTable.id, userId));
-
     return res.json({ message: "Password changed successfully" });
   } catch (err) {
     req.log.error({ err }, "Change password error");
+    return res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Password verification endpoint (used by withdrawal flow)
+router.post("/settings/verify-password", async (req, res) => {
+  try {
+    const userId = getUserId(req);
+    if (!userId) return res.status(401).json({ error: "Unauthorized" });
+
+    const { password } = req.body;
+    if (!password) return res.status(400).json({ error: "Password required" });
+
+    const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId)).limit(1);
+    const valid = user.passwordHash === hashPassword(password);
+
+    return res.json({ valid });
+  } catch (err) {
+    req.log.error({ err }, "Verify password error");
     return res.status(500).json({ error: "Internal server error" });
   }
 });
