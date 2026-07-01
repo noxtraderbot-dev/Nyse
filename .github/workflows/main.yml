@@ -1,3 +1,17 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
@@ -7,12 +21,23 @@
         with:
           node-version: 20
           cache: 'pnpm'
-      # Updated this line to fix the mismatch error
-      - run: pnpm install --no-frozen-lockfile
-      - run: pnpm run build --filter avernox
+      
+      # 1. Remove existing lockfile to prevent mismatch errors
+      - name: Clean lockfile
+        run: rm -f pnpm-lock.yaml
+      
+      # 2. Install dependencies freshly
+      - name: Install dependencies
+        run: pnpm install
+        
+      # 3. Build your specific package
+      - name: Build project
+        run: pnpm run build --filter avernox
+      
+      # 4. Deploy
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./avernox/dist
-   
+
