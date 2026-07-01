@@ -165,3 +165,132 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* ── Ticker ─────────────────────────────────────────────────────────────────── */
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-ticker {
+  animation: ticker-scroll 35s linear infinite;
+  will-change: transform;
+}
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* ── Float ───────────────────────────────────────────────────────────────────── */
+@keyframes float-y {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
+}
+.animate-float { animation: float-y 4s ease-in-out infinite; }
+.animate-float-slow { animation: float-y 6s ease-in-out infinite; }
+.animate-float-delayed { animation: float-y 4s ease-in-out 1.5s infinite; }
+
+/* ── Glow pulse ──────────────────────────────────────────────────────────────── */
+@keyframes glow-cyan {
+  0%, 100% { box-shadow: 0 0 15px rgba(6,182,212,0.25), 0 0 30px rgba(6,182,212,0.1); }
+  50%       { box-shadow: 0 0 30px rgba(6,182,212,0.5), 0 0 60px rgba(6,182,212,0.2); }
+}
+.animate-glow { animation: glow-cyan 3s ease-in-out infinite; }
+
+/* ── Scan line ───────────────────────────────────────────────────────────────── */
+@keyframes scan {
+  0%   { top: -4px; opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.6; }
+  100% { top: 100%; opacity: 0; }
+}
+.animate-scan::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(6,182,212,0.8), transparent);
+  animation: scan 4s linear infinite;
+}
+
+/* ── Orb / blob ──────────────────────────────────────────────────────────────── */
+@keyframes orb-rotate {
+  0%   { transform: rotate(0deg) scale(1); }
+  50%  { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+.animate-orb { animation: orb-rotate 12s linear infinite; }
+
+/* ── Sparkline draw ──────────────────────────────────────────────────────────── */
+@keyframes dash-draw {
+  from { stroke-dashoffset: 300; }
+  to   { stroke-dashoffset: 0; }
+}
+.sparkline-path {
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+  animation: dash-draw 2s ease-out forwards;
+}
+
+/* ── Counter shimmer ─────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.text-shimmer {
+  background: linear-gradient(90deg, #06b6d4 0%, #38bdf8 40%, #06b6d4 60%, #0891b2 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ── Grid overlay ────────────────────────────────────────────────────────────── */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(6,182,212,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6,182,212,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ── Glassmorphism card ──────────────────────────────────────────────────────── */
+.glass-card {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(6, 182, 212, 0.12);
+}
+.glass-card-bright {
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  box-shadow: 0 8px 32px rgba(6, 182, 212, 0.06), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+/* ── Gradient border ─────────────────────────────────────────────────────────── */
+.gradient-border {
+  position: relative;
+}
+.gradient-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(6,182,212,0.4) 0%, transparent 50%, rgba(6,182,212,0.2) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* ── Crypto icon pill ────────────────────────────────────────────────────────── */
+.crypto-pill {
+  background: rgba(6, 182, 212, 0.08);
+  border: 1px solid rgba(6, 182, 212, 0.18);
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+.crypto-pill:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.35);
+  transform: translateY(-1px);
+}
