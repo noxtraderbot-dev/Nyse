@@ -21,10 +21,13 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
+      # First, install all dependencies for the workspace
       - run: pnpm install
-      - run: pnpm --filter avernox build
+      # Build the project
+      - run: pnpm run build --filter avernox
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./artifacts/avernox/dist
+          # Points to the build output inside your avernox folder
+          publish_dir: ./avernox/dist
